@@ -16,6 +16,17 @@ var DESC_COL = 6;
 var ROW_HEIGHT = 80;
 var MAX_LIMIT = 500;
 
+/**
+ * Локали, где аргументы формулы разделяются запятой.
+ * Во всех остальных, включая русскую, нужна точка с запятой:
+ * =IMAGE("url"; 4; 68; 120)
+ */
+var COMMA_LOCALES = [
+  'en_US', 'en_GB', 'en_AU', 'en_CA', 'en_IE', 'en_IN', 'en_NZ', 'en_ZA',
+  'ja_JP', 'ko_KR', 'zh_CN', 'zh_TW', 'zh_HK', 'th_TH', 'ms_MY', 'hi_IN',
+  'iw_IL', 'he_IL'
+];
+
 var HEADERS = [
   '№',
   'Ссылка',
@@ -96,8 +107,9 @@ function runSearch(form) {
 
   var videos = fetchVideos(ids);
   var categories = fetchCategories(form.regionCode);
+  var separator = formulaSeparator();
   var rows = videos.map(function (video, i) {
-    return buildRow(video, i + 1, categories);
+    return buildRow(video, i + 1, categories, separator);
   });
 
   var sheet = writeRows(form, rows);
@@ -226,8 +238,23 @@ function fetchCategories(regionCode) {
   return map;
 }
 
+/**
+ * Чем разделять аргументы формулы в этой таблице.
+ * Формула кладётся в ячейку через setValues, а он разбирает её по локали
+ * документа: в русской нужна точка с запятой, в английской — запятая.
+ */
+function formulaSeparator() {
+  var locale;
+  try {
+    locale = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetLocale();
+  } catch (err) {
+    locale = '';
+  }
+  return COMMA_LOCALES.indexOf(locale) === -1 ? ';' : ',';
+}
+
 /** Одна строка таблицы из одного ролика. */
-function buildRow(video, index, categories) {
+function buildRow(video, index, categories, separator) {
   var snippet = video.snippet || {};
   var stats = video.statistics || {};
   var details = video.contentDetails || {};
@@ -239,7 +266,7 @@ function buildRow(video, index, categories) {
     index,
     'https://www.youtube.com/watch?v=' + video.id,
     toDate(snippet.publishedAt),
-    thumbnailFormula(snippet.thumbnails),
+    thumbnailFormula(snippet.thumbnails, separator),
     snippet.title || '',
     snippet.description || '',
     toNumber(stats.viewCount),
@@ -265,12 +292,12 @@ function buildRow(video, index, categories) {
 }
 
 /** Превью картинкой прямо в ячейке. */
-function thumbnailFormula(thumbnails) {
+function thumbnailFormula(thumbnails, separator) {
   if (!thumbnails) return '';
   var thumb = thumbnails.medium || thumbnails.high || thumbnails.default;
   if (!thumb || !thumb.url) return '';
-  // Apps Script всегда принимает формулы с запятой, локаль таблицы не важна.
-  return '=IMAGE("' + thumb.url + '", 4, 68, 120)';
+  var sep = separator || ';';
+  return '=IMAGE("' + thumb.url + '"' + sep + ' 4' + sep + ' 68' + sep + ' 120)';
 }
 
 function liveLabel(broadcast, live) {
