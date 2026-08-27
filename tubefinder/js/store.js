@@ -20,3 +20,44 @@ export function deletePreset(name){ const p = getPresets(); delete p[name]; writ
 
 export const getPrefs = () => read(K_PREFS, {});
 export function setPref(key, value){ const p = getPrefs(); p[key] = value; write(K_PREFS, p); }
+
+/* ---- коллекции сохранённых роликов ---- */
+const K_COLL = 'tubefinder:collections';
+export const getCollections = () => read(K_COLL, { 'Избранное': [] });
+
+export function collectionNames(){
+  const names = Object.keys(getCollections());
+  return names.length ? names : ['Избранное'];
+}
+
+export function addToCollection(name, video){
+  const c = getCollections();
+  const list = c[name] || (c[name] = []);
+  if (!list.some(v => v.id === video.id)) list.unshift({ ...video, savedAt: new Date().toISOString() });
+  write(K_COLL, c);
+}
+
+export function removeFromCollection(name, id){
+  const c = getCollections();
+  c[name] = (c[name] || []).filter(v => v.id !== id);
+  write(K_COLL, c);
+}
+
+export function deleteCollection(name){
+  const c = getCollections();
+  delete c[name];
+  write(K_COLL, Object.keys(c).length ? c : { 'Избранное': [] });
+}
+
+export function savedIds(){
+  const ids = new Set();
+  Object.values(getCollections()).forEach(list => list.forEach(v => ids.add(v.id)));
+  return ids;
+}
+
+export const savedTotal = () => savedIds().size;
+
+export function createCollection(name){
+  const c = getCollections();
+  if (!c[name]) { c[name] = []; write(K_COLL, c); }
+}
