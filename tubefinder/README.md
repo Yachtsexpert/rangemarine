@@ -50,11 +50,15 @@ python3 -m http.server 8123      # или: npx serve -l 8123
 В репозитории лежит workflow `.github/workflows/pages.yml`: он публикует содержимое
 папки `tubefinder/` на GitHub Pages при каждом пуше в основную ветку.
 
-1. В репозитории: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-2. Запушьте изменения (или запустите workflow вручную во вкладке **Actions**).
-3. Адрес вида `https://<логин>.github.io/<репозиторий>/` добавьте в
+1. Запушьте изменения (или запустите workflow вручную во вкладке **Actions**).
+   Шаг `configure-pages` идёт с `enablement: true` и включает Pages сам —
+   отдельно ничего настраивать не нужно.
+2. Адрес вида `https://<логин>.github.io/<репозиторий>/` добавьте в
    **Authorized JavaScript origins** вашего OAuth-клиента в Google Cloud —
    иначе вход через Google на боевом адресе не сработает.
+
+Если у организации запрещено включать Pages из Actions, сделайте это руками:
+**Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
 ## Настройка доступа (5 минут)
 
