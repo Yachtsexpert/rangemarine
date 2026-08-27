@@ -173,8 +173,9 @@ function renderResults(){
     applyFilters(state.items, { ...f, subs: state.subs || new Set() }),
     el.clientSort.value
   );
+  // «сохранено» считается по текущей коллекции: кнопка добавляет и убирает именно из неё
   renderCards(el.list, state.displayed, el.viewMode.value, {
-    saved: store.savedIds(),
+    saved: collectionIds(currentCollection()),
     showQuery: (f.queries || []).length > 1,
   });
   el.title.textContent = `Результаты · ${state.displayed.length}`;
@@ -219,6 +220,8 @@ function refreshCollections(selected){
     + `<option value="${NEW_COLLECTION}">＋ новая коллекция…</option>`;
   el.savedCount.textContent = store.savedTotal();
 }
+
+const collectionIds = (name) => new Set((store.getCollections()[name] || []).map(v => v.id));
 
 const currentCollection = () => {
   const v = el.collSelect.value;
@@ -292,7 +295,7 @@ el.list.addEventListener('click', (e) => {
     const video = state.displayed.find(v => v.id === saveBtn.dataset.save);
     if (!video) return;
     const name = currentCollection();
-    if (store.savedIds().has(video.id)) {
+    if (collectionIds(name).has(video.id)) {
       store.removeFromCollection(name, video.id);
     } else {
       store.addToCollection(name, video);
