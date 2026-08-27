@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parser YouTube</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">Parser YouTube</div>
+  <div class="account">
+    <span id="userEmail" class="user-email"></span>
+    <button id="signInBtn" class="btn btn-google">Войти через Google</button>
+    <button id="signOutBtn" class="btn btn-ghost hidden">Выйти</button>
+  </div>
+</header>
+
+<div id="setupBanner" class="setup-banner hidden">
+  <div>
+    <strong>Нужен Client ID.</strong>
+    Вставьте OAuth Client ID из Google Cloud Console (тип «Web application», в Authorized JavaScript origins добавьте адрес этой страницы, например <code>http://localhost:8000</code>).
+  </div>
+  <div class="setup-row">
+    <input id="clientIdInput" type="text" placeholder="1234567890-xxxxxxxx.apps.googleusercontent.com">
+    <button id="saveClientIdBtn" class="btn btn-primary">Сохранить</button>
+  </div>
+</div>
+
+<main class="layout">
+
+  <section class="results">
+    <div class="results-head">
+      <div id="status" class="status">Войдите в аккаунт и запустите поиск.</div>
+      <div class="results-actions">
+        <button id="exportBtn" class="btn btn-ghost" disabled>Скачать CSV</button>
+        <button id="copyBtn" class="btn btn-ghost" disabled>Копировать для Таблиц</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th>№</th>
+            <th>Ссылка</th>
+            <th>Дата публикации</th>
+            <th>Превью</th>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Просмотры</th>
+            <th>Лайки</th>
+            <th>Комментарии</th>
+            <th>Длительность</th>
+            <th>Канал</th>
+            <th>Качество</th>
+            <th>Субтитры</th>
+            <th>Теги</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <aside class="sidebar">
+    <h2 class="sidebar-title">Фильтры поиска</h2>
+
+    <label class="field">
+      <span>Поисковый запрос</span>
+      <input id="q" type="text" placeholder="название ролика">
+    </label>
+
+    <label class="field">
+      <span>Сколько роликов (до 200)</span>
+      <input id="limit" type="number" min="1" max="200" value="50">
+    </label>
+
+    <label class="field">
+      <span>Сортировка</span>
+      <select id="order">
+        <option value="relevance">По релевантности</option>
+        <option value="date">По дате</option>
+        <option value="viewCount">По просмотрам</option>
+        <option value="rating">По рейтингу</option>
+        <option value="title">По названию</option>
+      </select>
+    </label>
+
+    <div class="field-row">
+      <label class="field">
+        <span>Опубликовано после</span>
+        <input id="publishedAfter" type="date">
+      </label>
+      <label class="field">
+        <span>Опубликовано до</span>
+        <input id="publishedBefore" type="date">
+      </label>
+    </div>
+
+    <label class="field">
+      <span>Длительность</span>
+      <select id="videoDuration">
+        <option value="any">Любая</option>
+        <option value="short">Короткие (&lt; 4 мин)</option>
+        <option value="medium">Средние (4–20 мин)</option>
+        <option value="long">Длинные (&gt; 20 мин)</option>
+      </select>
+    </label>
+
+    <div class="field-row">
+      <label class="field">
+        <span>Качество</span>
+        <select id="videoDefinition">
+          <option value="any">Любое</option>
+          <option value="high">HD</option>
+          <option value="standard">SD</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Субтитры</span>
+        <select id="videoCaption">
+          <option value="any">Любые</option>
+          <option value="closedCaption">Есть</option>
+          <option value="none">Нет</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="field-row">
+      <label class="field">
+        <span>Язык</span>
+        <select id="relevanceLanguage">
+          <option value="">Любой</option>
+          <option value="ru">Русский</option>
+          <option value="en">Английский</option>
+          <option value="tr">Турецкий</option>
+          <option value="de">Немецкий</option>
+          <option value="es">Испанский</option>
+          <option value="fr">Французский</option>
+          <option value="it">Итальянский</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Регион</span>
+        <select id="regionCode">
+          <option value="">Любой</option>
+          <option value="RU">Россия</option>
+          <option value="US">США</option>
+          <option value="TR">Турция</option>
+          <option value="DE">Германия</option>
+          <option value="GB">Великобритания</option>
+          <option value="IT">Италия</option>
+          <option value="ES">Испания</option>
+        </select>
+      </label>
+    </div>
+
+    <label class="field">
+      <span>Тип видео</span>
+      <select id="eventType">
+        <option value="">Обычные и трансляции</option>
+        <option value="live">Идёт трансляция</option>
+        <option value="upcoming">Запланированные</option>
+        <option value="completed">Завершённые трансляции</option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span>Лицензия</span>
+      <select id="videoLicense">
+        <option value="any">Любая</option>
+        <option value="youtube">Стандартная YouTube</option>
+        <option value="creativeCommon">Creative Commons</option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span>ID канала (необязательно)</span>
+      <input id="channelId" type="text" placeholder="UCxxxxxxxxxxxxxxxx">
+    </label>
+
+    <label class="field">
+      <span>Безопасный поиск</span>
+      <select id="safeSearch">
+        <option value="none">Выключен</option>
+        <option value="moderate">Умеренный</option>
+        <option value="strict">Строгий</option>
+      </select>
+    </label>
+
+    <div class="sidebar-actions">
+      <button id="searchBtn" class="btn btn-search" disabled>Поиск</button>
+      <button id="resetBtn" class="btn btn-ghost btn-block">Сбросить фильтры</button>
+    </div>
+  </aside>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
