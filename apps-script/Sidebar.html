@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<style>
+  :root {
+    --line: #dadce0;
+    --text: #202124;
+    --muted: #5f6368;
+    --accent: #1a73e8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 12px 12px 96px;
+    font: 13px/1.4 Roboto, Arial, sans-serif;
+    color: var(--text);
+  }
+  h3 {
+    margin: 18px 0 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  h3:first-of-type { margin-top: 4px; }
+  label { display: block; margin-bottom: 10px; }
+  label > span {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--muted);
+  }
+  input[type=text], input[type=number], input[type=date], select {
+    width: 100%;
+    padding: 7px 8px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    font: inherit;
+    background: #fff;
+    color: var(--text);
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .row { display: flex; gap: 8px; }
+  .row > label { flex: 1; min-width: 0; }
+  .check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .check input { margin: 0; }
+  .check span { color: var(--text); }
+  .footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px 12px;
+    background: #fff;
+    border-top: 1px solid var(--line);
+  }
+  #searchBtn {
+    width: 100%;
+    padding: 12px;
+    border: 0;
+    border-radius: 4px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  #searchBtn:hover { background: #1765cc; }
+  #searchBtn:disabled { background: #9aa0a6; cursor: default; }
+  #resetBtn {
+    width: 100%;
+    margin-top: 6px;
+    padding: 7px;
+    border: 0;
+    background: none;
+    color: var(--muted);
+    font: inherit;
+    cursor: pointer;
+  }
+  #status {
+    margin-top: 8px;
+    min-height: 16px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  #status.error { color: #d93025; }
+  #status.ok { color: #188038; }
+</style>
+</head>
+<body>
+
+<h3>Запрос</h3>
+
+<label>
+  <span>Название ролика / ключевые слова</span>
+  <input type="text" id="q" placeholder="например: Range Marine 40">
+</label>
+
+<div class="row">
+  <label>
+    <span>Сколько роликов</span>
+    <input type="number" id="limit" value="50" min="1" max="500">
+  </label>
+  <label>
+    <span>Сортировка</span>
+    <select id="order">
+      <option value="relevance">По релевантности</option>
+      <option value="date">По дате</option>
+      <option value="viewCount">По просмотрам</option>
+      <option value="rating">По рейтингу</option>
+      <option value="title">По названию</option>
+    </select>
+  </label>
+</div>
+
+<h3>Дата публикации</h3>
+
+<div class="row">
+  <label>
+    <span>После</span>
+    <input type="date" id="publishedAfter">
+  </label>
+  <label>
+    <span>До</span>
+    <input type="date" id="publishedBefore">
+  </label>
+</div>
+
+<h3>Параметры видео</h3>
+
+<div class="row">
+  <label>
+    <span>Длительность</span>
+    <select id="videoDuration">
+      <option value="any">Любая</option>
+      <option value="short">До 4 минут</option>
+      <option value="medium">4–20 минут</option>
+      <option value="long">Больше 20 минут</option>
+    </select>
+  </label>
+  <label>
+    <span>Качество</span>
+    <select id="videoDefinition">
+      <option value="any">Любое</option>
+      <option value="high">HD</option>
+      <option value="standard">SD</option>
+    </select>
+  </label>
+</div>
+
+<div class="row">
+  <label>
+    <span>Субтитры</span>
+    <select id="videoCaption">
+      <option value="any">Любые</option>
+      <option value="closedCaption">Есть</option>
+      <option value="none">Нет</option>
+    </select>
+  </label>
+  <label>
+    <span>Лицензия</span>
+    <select id="videoLicense">
+      <option value="any">Любая</option>
+      <option value="youtube">Стандартная</option>
+      <option value="creativeCommon">Creative Commons</option>
+    </select>
+  </label>
+</div>
+
+<div class="row">
+  <label>
+    <span>Формат</span>
+    <select id="videoDimension">
+      <option value="any">Любой</option>
+      <option value="2d">2D</option>
+      <option value="3d">3D</option>
+    </select>
+  </label>
+  <label>
+    <span>Трансляции</span>
+    <select id="eventType">
+      <option value="">Все ролики</option>
+      <option value="live">Идут сейчас</option>
+      <option value="upcoming">Запланированы</option>
+      <option value="completed">Завершённые</option>
+    </select>
+  </label>
+</div>
+
+<div class="row">
+  <label>
+    <span>Встраивание</span>
+    <select id="videoEmbeddable">
+      <option value="any">Любое</option>
+      <option value="true">Только встраиваемые</option>
+    </select>
+  </label>
+  <label>
+    <span>Вне YouTube</span>
+    <select id="videoSyndicated">
+      <option value="any">Любые</option>
+      <option value="true">Только доступные</option>
+    </select>
+  </label>
+</div>
+
+<h3>Язык и регион</h3>
+
+<div class="row">
+  <label>
+    <span>Язык</span>
+    <select id="relevanceLanguage">
+      <option value="">Любой</option>
+      <option value="ru">Русский</option>
+      <option value="en">Английский</option>
+      <option value="tr">Турецкий</option>
+      <option value="de">Немецкий</option>
+      <option value="it">Итальянский</option>
+      <option value="es">Испанский</option>
+      <option value="fr">Французский</option>
+    </select>
+  </label>
+  <label>
+    <span>Регион</span>
+    <select id="regionCode">
+      <option value="">Любой</option>
+      <option value="RU">Россия</option>
+      <option value="US">США</option>
+      <option value="TR">Турция</option>
+      <option value="DE">Германия</option>
+      <option value="GB">Великобритания</option>
+      <option value="IT">Италия</option>
+      <option value="ES">Испания</option>
+    </select>
+  </label>
+</div>
+
+<label>
+  <span>Безопасный поиск</span>
+  <select id="safeSearch">
+    <option value="none">Выключен</option>
+    <option value="moderate">Умеренный</option>
+    <option value="strict">Строгий</option>
+  </select>
+</label>
+
+<h3>Точечный поиск</h3>
+
+<label>
+  <span>ID канала — только его ролики</span>
+  <input type="text" id="channelId" placeholder="UCxxxxxxxxxxxxxxxxxxxx">
+</label>
+
+<div class="row">
+  <label>
+    <span>Координаты</span>
+    <input type="text" id="location" placeholder="36.85, 30.78">
+  </label>
+  <label>
+    <span>Радиус</span>
+    <input type="text" id="locationRadius" placeholder="50km">
+  </label>
+</div>
+
+<h3>Куда писать</h3>
+
+<label>
+  <span>Лист</span>
+  <input type="text" id="sheetName" value="YouTube">
+</label>
+
+<div class="check">
+  <input type="checkbox" id="clear" checked>
+  <span>Очищать лист перед записью</span>
+</div>
+
+<div class="footer">
+  <button id="searchBtn" onclick="search()">Поиск</button>
+  <button id="resetBtn" onclick="resetForm()">Сбросить фильтры</button>
+  <div id="status"></div>
+</div>
+
+<script>
+  var FIELDS = [
+    'q', 'limit', 'order', 'publishedAfter', 'publishedBefore',
+    'videoDuration', 'videoDefinition', 'videoCaption', 'videoLicense',
+    'videoDimension', 'eventType', 'videoEmbeddable', 'videoSyndicated',
+    'relevanceLanguage', 'regionCode', 'safeSearch', 'channelId',
+    'location', 'locationRadius', 'sheetName'
+  ];
+
+  function collect() {
+    var form = {};
+    FIELDS.forEach(function (id) {
+      form[id] = document.getElementById(id).value;
+    });
+    form.clear = document.getElementById('clear').checked;
+    return form;
+  }
+
+  function setStatus(text, kind) {
+    var el = document.getElementById('status');
+    el.textContent = text;
+    el.className = kind || '';
+  }
+
+  function search() {
+    var form = collect();
+    if (!form.q.trim() && !form.channelId.trim()) {
+      setStatus('Введите запрос или ID канала.', 'error');
+      return;
+    }
+
+    document.getElementById('searchBtn').disabled = true;
+    setStatus('Ищу на YouTube…');
+
+    google.script.run
+      .withSuccessHandler(onDone)
+      .withFailureHandler(onError)
+      .runSearch(form);
+  }
+
+  function onDone(result) {
+    document.getElementById('searchBtn').disabled = false;
+    if (!result.count) {
+      setStatus('Ничего не нашлось — попробуйте ослабить фильтры.', 'error');
+      return;
+    }
+    setStatus(
+      'Готово: ' + result.count + ' роликов на листе «' + result.sheetName +
+      '». Потрачено ≈' + result.quota + ' единиц квоты.',
+      'ok'
+    );
+  }
+
+  function onError(err) {
+    document.getElementById('searchBtn').disabled = false;
+    setStatus(err.message || String(err), 'error');
+  }
+
+  function resetForm() {
+    FIELDS.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el.tagName === 'SELECT') {
+        el.selectedIndex = 0;
+      } else if (id === 'limit') {
+        el.value = '50';
+      } else if (id === 'sheetName') {
+        el.value = 'YouTube';
+      } else {
+        el.value = '';
+      }
+    });
+    document.getElementById('clear').checked = true;
+    setStatus('');
+  }
+</script>
+
+</body>
+</html>
