@@ -1,0 +1,711 @@
+<!-- ============================================================
+     RANGE MARINE / OK-BOATS — блок для страницы на Webasyst.
+     Вставлять целиком в HTML-режиме редактора страницы.
+     Весь CSS заизолирован внутри .rm-lp и не влияет на остальной сайт.
+     ============================================================ -->
+
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Prata&family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
+.rm-lp{
+  /* палитра: бумага морской карты, адмиралтейская маджента как акцент */
+  --rm-paper:#EEF1F1;
+  --rm-surface:#FDFEFE;
+  --rm-shoal:#DDE7E9;
+  --rm-ink:#0B1A21;
+  --rm-ink-2:#4A6069;
+  --rm-ink-3:#7B9199;
+  --rm-line:#C4D2D4;
+  --rm-line-soft:#DFE7E8;
+  --rm-accent:#A80E59;
+  --rm-accent-ink:#FFFFFF;
+  --rm-contour:rgba(11,26,33,.14);
+  --rm-shadow:0 1px 2px rgba(11,26,33,.05), 0 14px 34px -20px rgba(11,26,33,.4);
+
+  --rm-display:"Prata", "Times New Roman", Georgia, serif;
+  --rm-body:"Golos Text", "Helvetica Neue", Arial, sans-serif;
+  --rm-mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --rm-s--1:.8125rem;
+  --rm-s-0:1.0625rem;
+  --rm-s-1:1.25rem;
+  --rm-s-3:2.15rem;
+  --rm-s-4:clamp(2.4rem, 6vw, 4.4rem);
+  --rm-gap:clamp(3.5rem, 7vw, 6.5rem);
+  --rm-pad:clamp(1.15rem, 4vw, 3rem);
+
+  background:var(--rm-paper);
+  color:var(--rm-ink);
+  font-family:var(--rm-body);
+  font-size:var(--rm-s-0);
+  line-height:1.62;
+  text-align:left;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+
+  /* Раскомментируйте, чтобы блок шёл во всю ширину экрана,
+     вырываясь из контейнера темы:
+  width:100vw; margin-left:calc(50% - 50vw);
+  */
+}
+
+.rm-lp *,
+.rm-lp *::before,
+.rm-lp *::after{box-sizing:border-box}
+
+.rm-lp a{color:inherit; text-decoration:none}
+.rm-lp img{max-width:100%}
+.rm-lp :focus-visible{outline:2px solid var(--rm-accent); outline-offset:3px; border-radius:2px}
+
+/* сброс того, что может прилететь из темы сайта */
+.rm-lp ul,
+.rm-lp ol{list-style:none; margin:0; padding:0}
+.rm-lp li{margin:0}
+.rm-lp dl,
+.rm-lp dd,
+.rm-lp dt{margin:0}
+.rm-lp table{border-collapse:collapse; border:0; width:100%; margin:0; font-size:var(--rm-s--1)}
+.rm-lp caption{caption-side:top; text-align:left}
+.rm-lp figure,
+.rm-lp figcaption,
+.rm-lp blockquote{margin:0; padding:0; border:0}
+.rm-lp canvas{max-width:none}
+.rm-lp hr{display:none}
+
+/* ---------- каркас ---------- */
+
+.rm-lp .rm-wrap{max-width:1140px; margin:0 auto; padding-inline:var(--rm-pad)}
+
+.rm-lp .rm-band{border-top:1px solid var(--rm-line-soft); padding-block:var(--rm-gap)}
+.rm-lp .rm-band--shoal{background:var(--rm-shoal); border-top:1px solid var(--rm-line)}
+
+.rm-lp .rm-spine{
+  display:grid;
+  grid-template-columns:190px minmax(0,1fr);
+  gap:clamp(1.5rem,4vw,3.5rem);
+  align-items:start;
+}
+@media (max-width:900px){
+  .rm-lp .rm-spine{grid-template-columns:minmax(0,1fr); gap:1.5rem}
+}
+
+.rm-lp .rm-rail{
+  position:sticky;
+  top:2rem;
+  font-family:var(--rm-mono);
+  font-size:var(--rm-s--1);
+  line-height:1.5;
+  color:var(--rm-ink-3);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.rm-lp .rm-rail b{display:block; color:var(--rm-accent); font-weight:500; margin-bottom:.35rem}
+@media (max-width:900px){
+  .rm-lp .rm-rail{position:static; display:flex; gap:.75rem; align-items:baseline}
+  .rm-lp .rm-rail b{margin:0}
+}
+
+/* ---------- типографика ---------- */
+
+.rm-lp h1,
+.rm-lp h2,
+.rm-lp h3{
+  font-family:var(--rm-display);
+  font-weight:400;
+  text-wrap:balance;
+  letter-spacing:-.012em;
+  margin:0;
+  padding:0;
+  color:var(--rm-ink);
+  text-transform:none;
+}
+.rm-lp h1{font-size:var(--rm-s-4); line-height:1.02}
+.rm-lp h2{font-size:var(--rm-s-3); line-height:1.12; margin-bottom:1.1rem}
+.rm-lp h3{
+  font-size:var(--rm-s-1);
+  line-height:1.28;
+  font-family:var(--rm-body);
+  font-weight:600;
+  letter-spacing:-.005em;
+}
+
+.rm-lp p{margin:0 0 1rem; max-width:66ch; color:inherit}
+.rm-lp p:last-child{margin-bottom:0}
+.rm-lp strong{font-weight:600}
+
+.rm-lp .rm-lede{font-size:var(--rm-s-1); line-height:1.5; color:var(--rm-ink-2); max-width:60ch}
+.rm-lp .rm-note{font-size:var(--rm-s--1); color:var(--rm-ink-3); line-height:1.55; max-width:72ch}
+
+/* ---------- герой ---------- */
+
+.rm-lp .rm-hero{position:relative; padding-block:clamp(3.5rem,9vw,7rem) var(--rm-gap); overflow:hidden}
+.rm-lp #rm-chart{position:absolute; inset:0; width:100%; height:100%; display:block; pointer-events:none}
+.rm-lp .rm-hero .rm-wrap{position:relative; z-index:1}
+
+.rm-lp .rm-eyebrow{
+  font-family:var(--rm-mono);
+  font-size:var(--rm-s--1);
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--rm-accent);
+  margin:0 0 1.5rem;
+  display:flex;
+  flex-wrap:wrap;
+  gap:.35rem .9rem;
+  max-width:none;
+}
+.rm-lp .rm-eyebrow span::after{content:" ·"; color:var(--rm-ink-3)}
+.rm-lp .rm-eyebrow span:last-child::after{content:""}
+
+.rm-lp .rm-hero h1{max-width:15ch}
+.rm-lp .rm-hero .rm-lede{margin-top:1.5rem}
+
+.rm-lp .rm-actions{display:flex; flex-wrap:wrap; gap:.75rem; margin-top:2.25rem}
+.rm-lp .rm-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:.55rem;
+  padding:.85rem 1.5rem;
+  border-radius:2px;
+  font-family:var(--rm-body);
+  font-weight:600;
+  font-size:var(--rm-s-0);
+  line-height:1.2;
+  text-decoration:none;
+  border:1px solid var(--rm-accent);
+  background:var(--rm-accent);
+  color:var(--rm-accent-ink);
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+.rm-lp .rm-btn:hover{transform:translateY(-1px); box-shadow:var(--rm-shadow); color:var(--rm-accent-ink)}
+.rm-lp .rm-btn--ghost{background:transparent; color:var(--rm-ink); border-color:var(--rm-line)}
+.rm-lp .rm-btn--ghost:hover{border-color:var(--rm-accent); color:var(--rm-accent)}
+
+.rm-lp .rm-facts{
+  margin-top:clamp(2.5rem,6vw,4rem);
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:1px;
+  background:var(--rm-line-soft);
+  border-block:1px solid var(--rm-line-soft);
+}
+.rm-lp .rm-facts > div{background:var(--rm-paper); padding:1.1rem 1.25rem 1.2rem}
+.rm-lp .rm-facts dt{
+  font-family:var(--rm-mono);
+  font-size:.72rem;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  color:var(--rm-ink-3);
+  margin-bottom:.4rem;
+}
+.rm-lp .rm-facts dd{font-size:var(--rm-s--1); line-height:1.45; color:var(--rm-ink)}
+
+/* ---------- карточки и услуги ---------- */
+
+.rm-lp .rm-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(255px,1fr));
+  gap:1.25rem;
+  margin-top:2rem;
+}
+.rm-lp .rm-card{background:var(--rm-surface); border:1px solid var(--rm-line-soft); padding:1.6rem 1.5rem 1.7rem}
+.rm-lp .rm-card h3{margin-bottom:.6rem}
+.rm-lp .rm-card p{color:var(--rm-ink-2); font-size:var(--rm-s--1); line-height:1.6; margin:0}
+
+.rm-lp .rm-grid-list{
+  margin-top:2rem;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  border-top:1px solid var(--rm-line-soft);
+}
+.rm-lp .rm-grid-list li{
+  border-bottom:1px solid var(--rm-line-soft);
+  padding:1.1rem 1.25rem 1.15rem 0;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:.85rem;
+  align-items:start;
+}
+.rm-lp .rm-grid-list li::before{
+  content:"";
+  width:9px;
+  height:9px;
+  margin-top:.55rem;
+  border:1.5px solid var(--rm-accent);
+  border-radius:50%;
+}
+.rm-lp .rm-grid-list b{display:block; font-weight:600}
+.rm-lp .rm-grid-list span{font-size:var(--rm-s--1); color:var(--rm-ink-2); line-height:1.55}
+
+/* ---------- этапы ---------- */
+
+.rm-lp .rm-steps{counter-reset:rmstep; margin-top:2rem; border-top:1px solid var(--rm-line)}
+.rm-lp .rm-step{
+  counter-increment:rmstep;
+  display:grid;
+  grid-template-columns:4.5rem minmax(0,1fr);
+  gap:1.5rem;
+  padding:1.4rem 0 1.5rem;
+  border-bottom:1px solid var(--rm-line-soft);
+  align-items:start;
+}
+.rm-lp .rm-step::before{
+  content:"0" counter(rmstep);
+  font-family:var(--rm-mono);
+  font-size:var(--rm-s-1);
+  color:var(--rm-accent);
+  line-height:1.35;
+  font-variant-numeric:tabular-nums;
+}
+.rm-lp .rm-step p{margin:.3rem 0 0; color:var(--rm-ink-2); font-size:var(--rm-s--1); line-height:1.6}
+@media (max-width:600px){
+  .rm-lp .rm-step{grid-template-columns:3rem 1fr; gap:1rem}
+}
+
+/* ---------- таблица ---------- */
+
+.rm-lp .rm-table-scroll{overflow-x:auto; margin-top:2rem; border:1px solid var(--rm-line); background:var(--rm-surface)}
+.rm-lp .rm-table-scroll table{min-width:640px}
+.rm-lp .rm-table-scroll th,
+.rm-lp .rm-table-scroll td{
+  text-align:left;
+  padding:.95rem 1.15rem;
+  border:none;
+  border-bottom:1px solid var(--rm-line-soft);
+  vertical-align:top;
+  line-height:1.55;
+  background:none;
+}
+.rm-lp .rm-table-scroll thead th{
+  font-family:var(--rm-mono);
+  font-weight:500;
+  font-size:.72rem;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  color:var(--rm-ink-3);
+  background:var(--rm-paper);
+  border-bottom:1px solid var(--rm-line);
+}
+.rm-lp .rm-table-scroll tbody th{font-weight:600; white-space:nowrap; color:var(--rm-ink)}
+.rm-lp .rm-table-scroll td{color:var(--rm-ink-2)}
+.rm-lp .rm-table-scroll tbody tr:last-child th,
+.rm-lp .rm-table-scroll tbody tr:last-child td{border-bottom:none}
+
+/* ---------- направления ---------- */
+
+.rm-lp .rm-lanes{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:1px;
+  background:var(--rm-line);
+  border:1px solid var(--rm-line);
+  margin-top:2rem;
+}
+.rm-lp .rm-lane{background:var(--rm-shoal); padding:1.75rem 1.5rem}
+.rm-lp .rm-band--shoal .rm-lane{background:var(--rm-surface)}
+.rm-lp .rm-lane .rm-num{
+  font-family:var(--rm-mono);
+  font-size:.72rem;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  color:var(--rm-accent);
+  display:block;
+  margin-bottom:.9rem;
+}
+.rm-lp .rm-lane p{font-size:var(--rm-s--1); color:var(--rm-ink-2); margin:.5rem 0 0}
+
+/* ---------- FAQ ---------- */
+
+.rm-lp .rm-faq{margin-top:2rem; border-top:1px solid var(--rm-line)}
+.rm-lp .rm-faq details{border-bottom:1px solid var(--rm-line-soft); margin:0}
+.rm-lp .rm-faq summary{
+  cursor:pointer;
+  padding:1.15rem 2.5rem 1.15rem 0;
+  font-weight:600;
+  position:relative;
+  list-style:none;
+  transition:color .15s ease;
+}
+.rm-lp .rm-faq summary::-webkit-details-marker{display:none}
+.rm-lp .rm-faq summary:hover{color:var(--rm-accent)}
+.rm-lp .rm-faq summary::after{
+  content:"+";
+  position:absolute;
+  right:.35rem;
+  top:1.05rem;
+  font-family:var(--rm-mono);
+  color:var(--rm-accent);
+  font-size:var(--rm-s-1);
+  line-height:1;
+  transition:transform .2s ease;
+}
+.rm-lp .rm-faq details[open] summary::after{transform:rotate(45deg)}
+.rm-lp .rm-faq details p{margin:0 0 1.3rem; color:var(--rm-ink-2); font-size:var(--rm-s--1); line-height:1.65; max-width:70ch}
+
+/* ---------- фото ---------- */
+
+.rm-lp .rm-shot{position:relative; display:block; margin:0; background:var(--rm-shoal); overflow:hidden}
+.rm-lp .rm-shot img{width:100%; height:100%; object-fit:cover; display:block; max-width:100%}
+.rm-lp .rm-shot__label{
+  position:absolute;
+  left:0;
+  bottom:0;
+  font-family:var(--rm-mono);
+  font-size:.72rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--rm-ink-3);
+  padding:.6rem .9rem;
+  background:var(--rm-paper);
+  border-top:1px solid var(--rm-line);
+  border-right:1px solid var(--rm-line);
+}
+.rm-lp .rm-shot:has(img) .rm-shot__label{display:none}
+
+.rm-lp .rm-shot--wide{aspect-ratio:21/9; border-block:1px solid var(--rm-line)}
+/* без фото полоса ниже, с фото раскрывается на полную */
+.rm-lp .rm-shot--wide:not(:has(img)){aspect-ratio:40/9}
+@media (max-width:700px){
+  .rm-lp .rm-shot--wide,
+  .rm-lp .rm-shot--wide:not(:has(img)){aspect-ratio:4/3}
+}
+
+.rm-lp .rm-lane__shot{
+  aspect-ratio:4/3;
+  margin:-1.75rem -1.5rem 1.4rem;
+  border-bottom:1px solid var(--rm-line);
+  background:var(--rm-paper);
+}
+
+/* ---------- призыв и подвал ---------- */
+
+.rm-lp .rm-cta{background:var(--rm-ink); color:var(--rm-paper); padding-block:var(--rm-gap)}
+.rm-lp .rm-cta h2{color:var(--rm-paper)}
+.rm-lp .rm-cta .rm-lede{color:var(--rm-paper)}
+.rm-lp .rm-cta .rm-btn--ghost{color:var(--rm-paper); border-color:rgba(238,241,241,.35)}
+.rm-lp .rm-cta .rm-btn--ghost:hover{border-color:var(--rm-paper); color:var(--rm-paper)}
+
+.rm-lp .rm-foot{padding-block:2.5rem 3rem; border-top:1px solid var(--rm-line-soft); font-size:var(--rm-s--1); color:var(--rm-ink-3)}
+.rm-lp .rm-foot .rm-row{display:flex; flex-wrap:wrap; gap:.75rem 2rem; justify-content:space-between; align-items:baseline}
+.rm-lp .rm-foot a{color:var(--rm-ink-2); border-bottom:1px solid var(--rm-line)}
+.rm-lp .rm-foot a:hover{color:var(--rm-accent); border-color:var(--rm-accent)}
+.rm-lp .rm-brand{font-family:var(--rm-display); font-size:var(--rm-s-1); color:var(--rm-ink); letter-spacing:-.01em}
+
+@media (prefers-reduced-motion: reduce){
+  .rm-lp *{animation:none !important; transition:none !important}
+  .rm-lp .rm-btn:hover{transform:none}
+}
+</style>
+
+<div class="rm-lp">
+  <!-- ============ ГЕРОЙ ============ -->
+  <div class="rm-hero">
+    <canvas id="rm-chart" aria-hidden="true"></canvas>
+    <div class="rm-wrap">
+      <p class="rm-eyebrow"><span>Range Marine / OK-Boats</span><span>Санкт-Петербург</span><span>Европа · Турция</span></p>
+      <h1>Катер из Европы, купленный без сюрпризов</h1>
+      <p class="rm-lede">Подбираем, проверяем и привозим катера и яхты. Сверяем комплектацию с верфью, поднимаем документы и историю, считаем стоимость до вашей воды — до того, как вы заплатите первый рубль.</p>
+      <div class="rm-actions">
+        <a class="rm-btn" href="https://wa.me/79866001480">Написать в WhatsApp</a>
+        <a class="rm-btn rm-btn--ghost" href="https://t.me/NordStarRU">Написать в Telegram</a>
+      </div>
+
+      <dl class="rm-facts">
+        <div><dt>Маршрут</dt><dd>Финляндия, Швеция, ЕС → Россия</dd></div>
+        <div><dt>Оформление</dt><dd>РМРС, временный ввоз, возмещение НДС</dd></div>
+        <div><dt>Моторы</dt><dd>Yamaha, Volvo Penta, Mercury</dd></div>
+        <div><dt>Показы</dt><dd>Санкт-Петербург и на месте в ЕС</dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- ============ КАДР ============ -->
+  <!-- ФОТО: вставьте <img src="ССЫЛКА" alt="Катер на ходу"> внутрь <figure> ниже, первой строкой -->
+  <figure class="rm-shot rm-shot--wide">
+    <span class="rm-shot__label">Фото: катер на ходу · 2400×1030</span>
+  </figure>
+
+  <!-- ============ ЧТО ИДЁТ НЕ ТАК ============ -->
+  <section class="rm-band">
+    <div class="rm-wrap rm-spine">
+      <div class="rm-rail"><b>01</b> Зачем брокер</div>
+      <div>
+        <h2>Три места, где сделка обычно рассыпается</h2>
+        <p class="rm-lede">Катер редко оказывается плохим. Плохими оказываются вводные, на которых его покупали.</p>
+        <div class="rm-cards">
+          <div class="rm-card">
+            <h3>Комплектация «на словах»</h3>
+            <p>В объявлении одна опция, в заводском заказе другая. Мы сверяем спецификацию с верфью по серийному номеру, а не по описанию продавца.</p>
+          </div>
+          <div class="rm-card">
+            <h3>Цена без второй половины</h3>
+            <p>Ценник в Европе — это ещё не цена у вас на воде. Логистику, оформление и платежи мы считаем заранее, одной таблицей, а не по факту.</p>
+          </div>
+          <div class="rm-card">
+            <h3>Документы «потом разберёмся»</h3>
+            <p>Право собственности, регистрация, сервисная история. Это разбирается до задатка. После задатка это уже не переговоры, а убытки.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ УСЛУГИ ============ -->
+  <section class="rm-band">
+    <div class="rm-wrap rm-spine">
+      <div class="rm-rail"><b>02</b> Услуги</div>
+      <div>
+        <h2>Что мы берём на себя</h2>
+        <p class="rm-lede">От первой подборки до момента, когда катер стоит на своём месте и им можно пользоваться.</p>
+        <ul class="rm-grid-list">
+          <li><div><b>Подбор под задачу</b><span>Акватория, бюджет, сценарий: рыбалка, семья, дальние переходы, коммерческая эксплуатация.</span></div></li>
+          <li><div><b>Проверка документов</b><span>Собственность, обременения, регистрационная и сервисная история — до перевода денег.</span></div></li>
+          <li><div><b>Сверка с верфью</b><span>Заводская спецификация против фактической комплектации на борту.</span></div></li>
+          <li><div><b>Техническая диагностика</b><span>При необходимости — независимая проверка моторов и корпуса, отдельным специалистом.</span></div></li>
+          <li><div><b>Переговоры с продавцом</b><span>Цена, состав сделки, порядок расчётов и ответственность сторон в договоре.</span></div></li>
+          <li><div><b>Логистика и оформление</b><span>Маршрут, страховка, таможенные процедуры под выбранный сценарий ввоза.</span></div></li>
+          <li><div><b>Регистрация</b><span>РМРС и альтернативные варианты — подбираем под задачу владельца, а не по шаблону.</span></div></li>
+          <li><div><b>Стоянка и сервис</b><span>Место на воде, зимнее хранение, обслуживание и запчасти после покупки.</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ЭТАПЫ ============ -->
+  <section class="rm-band">
+    <div class="rm-wrap rm-spine">
+      <div class="rm-rail"><b>03</b> Порядок работы</div>
+      <div>
+        <h2>Как проходит сделка</h2>
+        <p class="rm-lede">Шесть этапов в жёстком порядке. Следующий не начинается, пока не закрыт предыдущий.</p>
+        <div class="rm-steps">
+          <div class="rm-step"><div><h3>Задача</h3><p>Разбираемся, где катер будет ходить и что вы от него хотите. Отсюда следует и класс корпуса, и мощность, и бюджет.</p></div></div>
+          <div class="rm-step"><div><h3>Подборка</h3><p>Несколько вариантов с рынка Финляндии, Швеции и остальной Европы — сразу с ориентировочным расчётом стоимости до вашего города.</p></div></div>
+          <div class="rm-step"><div><h3>Проверка</h3><p>Документы, история, сверка комплектации с верфью, при необходимости — техническая диагностика. Результат вы получаете до задатка.</p></div></div>
+          <div class="rm-step"><div><h3>Сделка</h3><p>Переговоры по цене и условиям, договор, поэтапные расчёты. Итоговые условия фиксируются документами, а не договорённостями на словах.</p></div></div>
+          <div class="rm-step"><div><h3>Доставка</h3><p>Маршрут и перевозчик, страхование на время перевозки, таможенное оформление по выбранному сценарию.</p></div></div>
+          <div class="rm-step"><div><h3>Передача</h3><p>Регистрация, спуск на воду, стоянка, ввод в эксплуатацию. Дальше — сервис и запчасти, если они нужны.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ЦЕНА И ОФОРМЛЕНИЕ ============ -->
+  <section class="rm-band rm-band--shoal">
+    <div class="rm-wrap rm-spine">
+      <div class="rm-rail"><b>04</b> Цена и ввоз</div>
+      <div>
+        <h2>Сценарии стоимости и оформления</h2>
+        <p class="rm-lede">Один и тот же катер стоит по-разному в зависимости от того, где он остаётся и как оформляется. Сценарий выбирается до сделки, а не после.</p>
+        <div class="rm-table-scroll">
+          <table>
+            <thead>
+              <tr><th scope="col">Сценарий</th><th scope="col">Что в него входит</th><th scope="col">Кому подходит</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Россия, под ключ</th>
+                <td>Покупка, доставка, таможенное оформление и передача владельцу на воде.</td>
+                <td>Тем, кто хочет одну цифру и одну ответственную сторону.</td>
+              </tr>
+              <tr>
+                <th scope="row">Россия, юрлицо</th>
+                <td>Тот же маршрут, но с расчётом стоимости после возмещения НДС — отдельной строкой.</td>
+                <td>Компаниям и ИП, которые покупают катер на организацию.</td>
+              </tr>
+              <tr>
+                <th scope="row">Европа</th>
+                <td>Катер покупается и остаётся на стоянке в ЕС, без ввоза в Россию.</td>
+                <td>Тем, кто ходит по Балтике и Средиземному морю и не возит лодку домой.</td>
+              </tr>
+              <tr>
+                <th scope="row">Турция</th>
+                <td>Покупка и оформление под турецкую стоянку и местный режим эксплуатации.</td>
+                <td>Тем, у кого база в Турции: сезон длиннее, логистика короче.</td>
+              </tr>
+              <tr>
+                <th scope="row">Временный ввоз</th>
+                <td>Режим для ограниченного срока эксплуатации в России с последующим вывозом.</td>
+                <td>Сезонному использованию и случаям, когда постоянный ввоз не нужен.</td>
+              </tr>
+              <tr>
+                <th scope="row">РМРС</th>
+                <td>Регистрация в Российском морском регистре судоходства и сопутствующие требования.</td>
+                <td>Судам, которым нужен именно этот статус по характеру эксплуатации.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="rm-note" style="margin-top:1.25rem">Все расчёты ориентировочные и требуют подтверждения. Итоговые цифры и условия фиксируются после проверки документов, фактической комплектации и согласования маршрута. Мы не обещаем гарантированного возмещения НДС или безрискового оформления — мы показываем механику и считаем варианты.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ НАПРАВЛЕНИЯ ============ -->
+  <section class="rm-band">
+    <div class="rm-wrap rm-spine">
+      <div class="rm-rail"><b>05</b> Что возим</div>
+      <div>
+        <h2>Не только корпуса</h2>
+        <div class="rm-lanes">
+          <div class="rm-lane">
+            <!-- ФОТО: вставьте <img src="ССЫЛКА" alt="Катер у причала"> внутрь <figure> ниже, первой строкой -->
+            <figure class="rm-shot rm-lane__shot">
+              <span class="rm-shot__label">Фото: катер · 900×675</span>
+            </figure>
+            <span class="rm-num">Катера и яхты</span>
+            <h3>Скандинавия и Европа</h3>
+            <p>Новые лодки с верфи и суда с историей: от компактных трейлерных корпусов до моторных яхт для открытой воды. Подбираем под акваторию, а не под красивую картинку.</p>
+          </div>
+          <div class="rm-lane">
+            <!-- ФОТО: вставьте <img src="ССЫЛКА" alt="Подвесной мотор Yamaha на транце"> внутрь <figure> ниже, первой строкой -->
+            <figure class="rm-shot rm-lane__shot">
+              <span class="rm-shot__label">Фото: мотор · 900×675</span>
+            </figure>
+            <span class="rm-num">Подвесные моторы</span>
+            <h3>Yamaha, от портативных до XTO</h3>
+            <p>Расчёт мотора под конкретную лодку, парная установка, оснастка и рулевое. Работаем и с единичными заказами, и с партиями для верфей.</p>
+          </div>
+          <div class="rm-lane">
+            <!-- ФОТО: вставьте <img src="ССЫЛКА" alt="Дизельный двигатель в моторном отсеке"> внутрь <figure> ниже, первой строкой -->
+            <figure class="rm-shot rm-lane__shot">
+              <span class="rm-shot__label">Фото: двигатель · 900×675</span>
+            </figure>
+            <span class="rm-num">Дизель и репауэринг</span>
+            <h3>Volvo Penta, IPS, генераторы</h3>
+            <p>Стационарные дизели, колонки и IPS, редукторы, генераторы. Подбор пакета репауэринга, когда корпус ещё хороший, а моторы уже нет.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="rm-band">
+    <div class="rm-wrap rm-spine">
+      <div class="rm-rail"><b>06</b> Вопросы</div>
+      <div>
+        <h2>Нас ещё спрашивают</h2>
+        <div class="rm-faq">
+          <details open>
+            <summary>Можно посмотреть катер живьём?</summary>
+            <p>По лодкам, которые уже в России, организуем показ в Санкт-Петербурге. По европейским — осмотр на месте или подробный видеоосмотр с проверкой конкретных узлов по вашему списку.</p>
+          </details>
+          <details>
+            <summary>Насколько это законно?</summary>
+            <p>Это обычные внешнеторговые процедуры: покупка, перевозка, таможенное оформление, регистрация. Сценарий подбирается под вашу ситуацию, и каждый шаг подтверждается документами. Если в конкретном случае схема не складывается, мы говорим это прямо, а не «решаем по ходу».</p>
+          </details>
+          <details>
+            <summary>Сколько это занимает по времени?</summary>
+            <p>Срок зависит от лодки, продавца, маршрута и выбранного сценария оформления. Мы называем сроки не в общем, а после того, как согласован конкретный катер и маршрут — и обозначаем, что может их сдвинуть.</p>
+          </details>
+          <details>
+            <summary>Работаете с юридическими лицами?</summary>
+            <p>Да. Для компаний и ИП стоимость считается двумя строками: до и после возмещения НДС. Возмещение — это процедура, а не обещание, поэтому вторая строка всегда идёт с пометкой «ориентировочно».</p>
+          </details>
+          <details>
+            <summary>А если мне нужен только мотор или запчасти?</summary>
+            <p>Тоже работаем. Подвесные Yamaha, дизели и компоненты Volvo Penta, редукторы, колонки, генераторы, электроника управления. Считаем поставку отдельно от лодки.</p>
+          </details>
+          <details>
+            <summary>Что будет после покупки?</summary>
+            <p>Поможем с местом на воде, зимним хранением и сервисом. Продажа катера — не конец работы: сезон надо ещё открыть и закрыть.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ПРИЗЫВ ============ -->
+  <section class="rm-cta">
+    <div class="rm-wrap">
+      <h2>Расскажите, где вы будете ходить</h2>
+      <p class="rm-lede" style="color:inherit">Соберём подборку под вашу задачу и посчитаем ориентировочную стоимость до вашей воды. Без обязательств и без давления — сначала цифры, потом разговор о сделке.</p>
+      <div class="rm-actions">
+        <a class="rm-btn" href="https://wa.me/79866001480">Написать в WhatsApp</a>
+        <a class="rm-btn rm-btn--ghost" href="https://t.me/NordStarRU">Написать в Telegram</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="rm-foot">
+    <div class="rm-wrap rm-row">
+      <span class="rm-brand">Range Marine / OK-Boats</span>
+      <span>Катера, яхты и моторы: подбор, проверка, поставка и оформление. Санкт-Петербург.</span>
+      <span>
+        <a href="https://wa.me/79866001480">WhatsApp</a> · <a href="https://t.me/NordStarRU">Telegram</a>
+      </span>
+    </div>
+  </div></div>
+
+<script>
+/* Фон героя: изобаты морской карты с промерами глубин. */
+(function () {
+  if (window.__rmChartInit) return;
+  window.__rmChartInit = true;
+
+  function start() {
+    var cvs = document.getElementById("rm-chart");
+    if (!cvs || !cvs.getContext) return;
+    var ctx = cvs.getContext("2d");
+
+    function draw() {
+      var host = cvs.parentElement;
+      var w = host.clientWidth, h = host.clientHeight;
+      if (!w || !h) return;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cvs.width = w * dpr;
+      cvs.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+
+      var stroke = getComputedStyle(cvs).getPropertyValue("--rm-contour").trim() || "rgba(11,26,33,.14)";
+      ctx.strokeStyle = stroke;
+      ctx.fillStyle = stroke;
+      ctx.lineWidth = 1;
+
+      var levels = 11;
+      for (var i = 0; i < levels; i++) {
+        var t = i / (levels - 1);
+        var base = h * (0.16 + t * 0.98);
+        var amp = 16 + i * 5;
+        ctx.beginPath();
+        for (var x = -20; x <= w + 20; x += 6) {
+          var p = x / w;
+          var y = base
+            + amp * Math.sin(p * 3.1 + i * 0.55)
+            + amp * 0.45 * Math.sin(p * 7.4 + i * 1.3)
+            + amp * 0.2 * Math.sin(p * 13.1 + i * 0.9);
+          if (x === -20) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.globalAlpha = 1 - t * 0.45;
+        ctx.stroke();
+      }
+
+      ctx.globalAlpha = 0.75;
+      ctx.font = '10px "IBM Plex Mono", monospace';
+      var soundings = [[0.08, 0.30, "4,2"], [0.26, 0.52, "7,8"], [0.44, 0.24, "3,1"],
+                       [0.62, 0.63, "11,4"], [0.79, 0.38, "6,5"], [0.91, 0.71, "14,0"],
+                       [0.17, 0.78, "9,3"], [0.53, 0.86, "12,7"]];
+      for (var s = 0; s < soundings.length; s++) {
+        ctx.fillText(soundings[s][2], soundings[s][0] * w, soundings[s][1] * h);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    var raf;
+    function schedule() { cancelAnimationFrame(raf); raf = requestAnimationFrame(draw); }
+
+    draw();
+    window.addEventListener("resize", schedule);
+    if (window.ResizeObserver) new ResizeObserver(schedule).observe(cvs.parentElement);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
+})();
+</script>

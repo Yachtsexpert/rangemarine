@@ -432,6 +432,50 @@ details p{
   max-width:70ch;
 }
 
+/* ---------- фото ---------- */
+
+.shot{
+  position:relative;
+  display:block;
+  margin:0;
+  background:var(--shoal);
+  overflow:hidden;
+}
+.shot img{width:100%; height:100%; object-fit:cover; display:block}
+.shot__label{
+  position:absolute;
+  left:0;
+  bottom:0;
+  font-family:var(--font-mono);
+  font-size:.72rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  padding:.6rem .9rem;
+  background:var(--paper);
+  border-top:1px solid var(--line);
+  border-right:1px solid var(--line);
+}
+.shot:has(img) .shot__label{display:none}
+
+.shot--wide{
+  aspect-ratio:21/9;
+  border-block:1px solid var(--line);
+}
+/* без фото полоса ниже, с фото раскрывается на полную */
+.shot--wide:not(:has(img)){aspect-ratio:40/9}
+@media (max-width:700px){
+  .shot--wide,
+  .shot--wide:not(:has(img)){aspect-ratio:4/3}
+}
+
+.lane__shot{
+  aspect-ratio:4/3;
+  margin:-1.75rem -1.5rem 1.4rem;
+  border-bottom:1px solid var(--line);
+  background:var(--paper);
+}
+
 /* ---------- финальный призыв ---------- */
 
 .cta{
@@ -502,6 +546,12 @@ footer a:hover{color:var(--accent); border-color:var(--accent)}
     </dl>
   </div>
 </header>
+
+<!-- ============ КАДР ============ -->
+<!-- ФОТО: вставьте <img src="ССЫЛКА" alt="Катер на ходу"> внутрь <figure> ниже, первой строкой -->
+<figure class="shot shot--wide">
+  <span class="shot__label">Фото: катер на ходу · 2400×1030</span>
+</figure>
 
 <!-- ============ ЧТО ИДЁТ НЕ ТАК ============ -->
 <section class="band">
@@ -627,16 +677,28 @@ footer a:hover{color:var(--accent); border-color:var(--accent)}
       <h2>Не только корпуса</h2>
       <div class="lanes">
         <article class="lane">
+          <!-- ФОТО: вставьте <img src="ССЫЛКА" alt="Катер у причала"> внутрь <figure> ниже, первой строкой -->
+          <figure class="shot lane__shot">
+            <span class="shot__label">Фото: катер · 900×675</span>
+          </figure>
           <span class="num">Катера и яхты</span>
           <h3>Скандинавия и Европа</h3>
           <p>Новые лодки с верфи и суда с историей: от компактных трейлерных корпусов до моторных яхт для открытой воды. Подбираем под акваторию, а не под красивую картинку.</p>
         </article>
         <article class="lane">
+          <!-- ФОТО: вставьте <img src="ССЫЛКА" alt="Подвесной мотор Yamaha на транце"> внутрь <figure> ниже, первой строкой -->
+          <figure class="shot lane__shot">
+            <span class="shot__label">Фото: мотор · 900×675</span>
+          </figure>
           <span class="num">Подвесные моторы</span>
           <h3>Yamaha, от портативных до XTO</h3>
           <p>Расчёт мотора под конкретную лодку, парная установка, оснастка и рулевое. Работаем и с единичными заказами, и с партиями для верфей.</p>
         </article>
         <article class="lane">
+          <!-- ФОТО: вставьте <img src="ССЫЛКА" alt="Дизельный двигатель в моторном отсеке"> внутрь <figure> ниже, первой строкой -->
+          <figure class="shot lane__shot">
+            <span class="shot__label">Фото: двигатель · 900×675</span>
+          </figure>
           <span class="num">Дизель и репауэринг</span>
           <h3>Volvo Penta, IPS, генераторы</h3>
           <p>Стационарные дизели, колонки и IPS, редукторы, генераторы. Подбор пакета репауэринга, когда корпус ещё хороший, а моторы уже нет.</p>
