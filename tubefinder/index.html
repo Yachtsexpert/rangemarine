@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TubeFinder — поиск роликов YouTube по названию</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔎</text></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">▶</span>
+    <span class="brand-name">TubeFinder</span>
+    <span class="brand-sub">поиск роликов по названию</span>
+  </div>
+  <div class="topbar-right">
+    <button id="btn-settings" class="ghost-btn" type="button" title="Ключи доступа">⚙ Доступ</button>
+    <div id="auth-box" class="auth-box">
+      <button id="btn-signin" class="google-btn" type="button">
+        <span class="g">G</span> Войти через Google
+      </button>
+      <div id="profile" class="profile hidden">
+        <img id="profile-pic" alt="" referrerpolicy="no-referrer">
+        <div class="profile-txt">
+          <div id="profile-name"></div>
+          <div id="profile-mail" class="muted"></div>
+        </div>
+        <button id="btn-signout" class="ghost-btn" type="button">Выйти</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- ЛЕВО: результаты -->
+  <section class="results" aria-label="Результаты поиска">
+    <div class="results-head">
+      <h2 id="results-title">Результаты</h2>
+      <div class="results-tools">
+        <label class="inline">
+          <span class="muted">Сортировать</span>
+          <select id="client-sort">
+            <option value="api">как выдал YouTube</option>
+            <option value="views">по просмотрам</option>
+            <option value="likes">по лайкам</option>
+            <option value="date">по дате (новые)</option>
+            <option value="date-asc">по дате (старые)</option>
+            <option value="duration">по длительности</option>
+            <option value="engagement">по вовлечённости</option>
+          </select>
+        </label>
+        <label class="inline">
+          <span class="muted">Вид</span>
+          <select id="view-mode">
+            <option value="list">список</option>
+            <option value="grid">плитка</option>
+          </select>
+        </label>
+        <button id="btn-export" class="ghost-btn" type="button" disabled>Экспорт CSV</button>
+      </div>
+    </div>
+
+    <div id="stats" class="stats hidden"></div>
+    <div id="error" class="error hidden"></div>
+
+    <div id="results-list" class="cards list"></div>
+
+    <div class="results-foot">
+      <button id="btn-more" class="secondary-btn hidden" type="button">Загрузить ещё</button>
+      <div id="empty" class="empty">
+        <div class="empty-icon">🔍</div>
+        <p>Введите название ролика справа, настройте фильтры и нажмите <b>Поиск</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ПРАВО: настройки + большая кнопка -->
+  <aside class="panel" aria-label="Настройки поиска">
+    <form id="search-form" autocomplete="off">
+
+      <div class="field">
+        <label for="q">Название ролика</label>
+        <input id="q" name="q" type="text" placeholder="например: обзор катера Range Marine" required>
+        <label class="check"><input type="checkbox" id="title-only" checked> Искать совпадение именно в названии</label>
+      </div>
+
+      <button id="btn-search" class="search-btn" type="submit">
+        <span class="search-btn-ico">🔎</span>
+        <span class="search-btn-txt">Поиск</span>
+      </button>
+
+      <div class="preset-row">
+        <select id="preset-list" aria-label="Сохранённые пресеты"><option value="">— пресеты —</option></select>
+        <button id="btn-preset-save" class="ghost-btn" type="button" title="Сохранить текущие настройки">＋</button>
+        <button id="btn-preset-del" class="ghost-btn" type="button" title="Удалить выбранный пресет">🗑</button>
+      </div>
+
+      <details class="group" open>
+        <summary>Основные фильтры</summary>
+
+        <div class="grid2">
+          <div class="field">
+            <label for="order">Сортировка YouTube</label>
+            <select id="order">
+              <option value="relevance">релевантность</option>
+              <option value="date">дата загрузки</option>
+              <option value="viewCount">просмотры</option>
+              <option value="rating">рейтинг</option>
+              <option value="title">название</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="max">Сколько найти</label>
+            <select id="max">
+              <option value="25">25</option>
+              <option value="50" selected>50</option>
+              <option value="100">100</option>
+              <option value="150">150</option>
+              <option value="200">200</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="period">Период публикации</label>
+          <select id="period">
+            <option value="">любой</option>
+            <option value="1">за 24 часа</option>
+            <option value="7">за неделю</option>
+            <option value="30">за месяц</option>
+            <option value="90">за 3 месяца</option>
+            <option value="365">за год</option>
+            <option value="custom">свой диапазон</option>
+          </select>
+        </div>
+        <div id="custom-dates" class="grid2 hidden">
+          <div class="field"><label for="date-from">С</label><input id="date-from" type="date"></div>
+          <div class="field"><label for="date-to">По</label><input id="date-to" type="date"></div>
+        </div>
+
+        <div class="grid2">
+          <div class="field">
+            <label for="duration">Длительность</label>
+            <select id="duration">
+              <option value="any">любая</option>
+              <option value="short">до 4 мин</option>
+              <option value="medium">4–20 мин</option>
+              <option value="long">больше 20 мин</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="definition">Качество</label>
+            <select id="definition">
+              <option value="any">любое</option>
+              <option value="high">HD</option>
+              <option value="standard">SD</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="field">
+            <label for="region">Регион</label>
+            <select id="region">
+              <option value="">любой</option>
+              <option value="RU" selected>Россия</option>
+              <option value="US">США</option>
+              <option value="GB">Великобритания</option>
+              <option value="DE">Германия</option>
+              <option value="TR">Турция</option>
+              <option value="IT">Италия</option>
+              <option value="ES">Испания</option>
+              <option value="FR">Франция</option>
+              <option value="AE">ОАЭ</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="lang">Язык</label>
+            <select id="lang">
+              <option value="">любой</option>
+              <option value="ru" selected>русский</option>
+              <option value="en">английский</option>
+              <option value="tr">турецкий</option>
+              <option value="de">немецкий</option>
+              <option value="it">итальянский</option>
+              <option value="es">испанский</option>
+            </select>
+          </div>
+        </div>
+      </details>
+
+      <details class="group">
+        <summary>Точные условия</summary>
+
+        <div class="grid2">
+          <div class="field"><label for="views-min">Просмотров от</label><input id="views-min" type="number" min="0" placeholder="0"></div>
+          <div class="field"><label for="views-max">до</label><input id="views-max" type="number" min="0" placeholder="∞"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label for="len-min">Длина от, мин</label><input id="len-min" type="number" min="0" step="0.5" placeholder="0"></div>
+          <div class="field"><label for="len-max">до, мин</label><input id="len-max" type="number" min="0" step="0.5" placeholder="∞"></div>
+        </div>
+        <div class="field">
+          <label for="include">Обязательные слова в названии</label>
+          <input id="include" type="text" placeholder="через запятую: катер, тест">
+        </div>
+        <div class="field">
+          <label for="exclude">Стоп-слова (исключить)</label>
+          <input id="exclude" type="text" placeholder="через запятую: розыгрыш, обзор игры">
+        </div>
+        <div class="field">
+          <label for="channel-name">Канал содержит</label>
+          <input id="channel-name" type="text" placeholder="часть названия канала">
+        </div>
+        <div class="field">
+          <label for="channel-id">Только канал по ID / ссылке</label>
+          <input id="channel-id" type="text" placeholder="UC... или ссылка на канал">
+        </div>
+
+        <label class="check"><input type="checkbox" id="no-shorts"> Исключить Shorts (до 60 сек)</label>
+        <label class="check"><input type="checkbox" id="only-shorts"> Только Shorts</label>
+        <label class="check"><input type="checkbox" id="cc"> Только с субтитрами</label>
+        <label class="check"><input type="checkbox" id="creative"> Только лицензия Creative Commons</label>
+        <label class="check"><input type="checkbox" id="embeddable"> Только встраиваемые</label>
+        <label class="check"><input type="checkbox" id="safe"> Безопасный поиск</label>
+      </details>
+
+      <details class="group">
+        <summary>Мой аккаунт</summary>
+        <p class="muted small" id="acct-hint">Войдите через Google — станут доступны фильтры по вашим подпискам и поиск от вашего имени.</p>
+        <label class="check"><input type="checkbox" id="only-subs" disabled> Только каналы из моих подписок</label>
+        <label class="check"><input type="checkbox" id="hide-subs" disabled> Скрыть каналы, на которые я подписан</label>
+        <div class="field">
+          <label for="event">Трансляции</label>
+          <select id="event">
+            <option value="">не важно</option>
+            <option value="live">идут сейчас</option>
+            <option value="upcoming">запланированные</option>
+            <option value="completed">завершённые</option>
+          </select>
+        </div>
+      </details>
+
+      <button id="btn-reset" class="ghost-btn wide" type="button">Сбросить фильтры</button>
+    </form>
+  </aside>
+</main>
+
+<!-- Модалка ключей -->
+<div id="modal" class="modal hidden">
+  <div class="modal-card">
+    <h3>Доступ к YouTube API</h3>
+    <p class="muted small">Ключи хранятся только в вашем браузере (localStorage) и никуда не отправляются, кроме Google.</p>
+    <div class="field">
+      <label for="in-client">OAuth Client ID (вход по аккаунту)</label>
+      <input id="in-client" type="text" placeholder="123-abc.apps.googleusercontent.com">
+    </div>
+    <div class="field">
+      <label for="in-key">API-ключ (поиск без входа, необязательно)</label>
+      <input id="in-key" type="text" placeholder="AIza...">
+    </div>
+    <p class="muted small">Как получить — см. README.md в репозитории.</p>
+    <div class="modal-actions">
+      <button id="btn-keys-save" class="secondary-btn" type="button">Сохранить</button>
+      <button id="btn-keys-close" class="ghost-btn" type="button">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
