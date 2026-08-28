@@ -25,13 +25,16 @@ const words = (str) => (str || '').split(',').map(s => s.trim().toLowerCase()).f
 export function applyFilters(items, f){
   const inc = words(f.include);
   const exc = words(f.exclude);
-  const qWords = f.titleOnly ? words(f.q.replace(/[,\s]+/g, ',')) : [];
+  // несколько запросов: ролик подходит, если совпал хотя бы с одним из них
+  const qSets = f.titleOnly
+    ? (f.queries || []).map(q => words(q.replace(/[,\s]+/g, ','))).filter(set => set.length)
+    : [];
 
   return items.filter(v => {
     const title = (v.title || '').toLowerCase();
     const chan = (v.channelTitle || '').toLowerCase();
 
-    if (qWords.length && !qWords.every(w => title.includes(w))) return false;
+    if (qSets.length && !qSets.some(set => set.every(w => title.includes(w)))) return false;
     if (inc.length && !inc.every(w => title.includes(w))) return false;
     if (exc.length && exc.some(w => title.includes(w) || (v.description || '').toLowerCase().includes(w))) return false;
     if (f.channelName && !chan.includes(f.channelName.toLowerCase())) return false;

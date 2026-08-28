@@ -4,7 +4,8 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => (
   { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
 ));
 
-export function renderCards(root, items, mode){
+export function renderCards(root, items, mode, opts = {}){
+  const { saved = new Set(), view = 'search', showQuery = false } = opts;
   root.className = `cards ${mode}`;
   if (!items.length) { root.innerHTML = ''; return; }
 
@@ -32,11 +33,15 @@ export function renderCards(root, items, mode){
           ${rate > 0.05 ? `<span class="chip hot">🔥 ${(rate * 100).toFixed(1)}% лайков</span>` : ''}
           ${v.definition === 'hd' ? '<span class="chip">HD</span>' : ''}
           ${v.caption === 'true' ? '<span class="chip">СС</span>' : ''}
+          ${showQuery && v.query ? `<span class="chip q">${esc(v.query)}</span>` : ''}
         </div>
         <p class="card-desc">${esc(v.description)}</p>
         <div class="card-actions">
           <a href="${url}" target="_blank" rel="noopener">Смотреть</a>
           <button type="button" data-copy="${url}">Копировать ссылку</button>
+          ${view === 'saved'
+            ? `<button type="button" data-remove="${v.id}">Убрать</button>`
+            : `<button type="button" class="${saved.has(v.id) ? 'saved' : ''}" data-save="${v.id}">${saved.has(v.id) ? '★ Сохранено' : '☆ В коллекцию'}</button>`}
         </div>
       </div>
     </article>`;
