@@ -40,6 +40,11 @@
 
   <!-- ЛЕВО: результаты -->
   <section class="results" aria-label="Результаты поиска">
+    <div class="tabs">
+      <button id="tab-search" class="tab active" type="button">Результаты</button>
+      <button id="tab-saved" class="tab" type="button">Коллекции <span id="saved-count" class="tab-count">0</span></button>
+    </div>
+
     <div class="results-head">
       <h2 id="results-title">Результаты</h2>
       <div class="results-tools">
@@ -66,6 +71,11 @@
       </div>
     </div>
 
+    <div id="coll-bar" class="coll-bar hidden">
+      <select id="coll-select" aria-label="Коллекция"></select>
+      <button id="btn-coll-clear" class="ghost-btn" type="button">Удалить коллекцию</button>
+    </div>
+
     <div id="stats" class="stats hidden"></div>
     <div id="error" class="error hidden"></div>
 
@@ -86,7 +96,8 @@
 
       <div class="field">
         <label for="q">Название ролика</label>
-        <input id="q" name="q" type="text" placeholder="например: обзор катера Range Marine" required>
+        <textarea id="q" name="q" rows="2" placeholder="например: обзор катера Range Marine" required></textarea>
+        <p class="muted small hint">Несколько запросов — каждый с новой строки. Ctrl+Enter — поиск.</p>
         <label class="check"><input type="checkbox" id="title-only" checked> Искать совпадение именно в названии</label>
       </div>
 

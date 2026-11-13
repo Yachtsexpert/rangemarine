@@ -1,0 +1,15 @@
+{
+  "destination": "ПОДСТАВЬТЕ: место/экскурсия",
+  "language": "ru",
+  "goal": "inquiry",
+  "brand": "",
+  "rightsConfirmed": false,
+  "cta": "",
+  "contact": "",
+  "shots": [
+    { "id": "s1", "src": "reel/photo1.jpg", "seconds": 4, "role": "reveal", "caption": "Короткий хук без выдуманных фактов", "motion": "zoom-in" },
+    { "id": "s2", "src": "reel/photo2.jpg", "seconds": 5, "role": "prove", "caption": "Реальная деталь #1", "motion": "pan-left" },
+    { "id": "s3", "src": "reel/clip1.mp4", "seconds": 5, "role": "prove", "caption": "Реальная деталь #2" },
+    { "id": "s4", "src": "reel/photo3.jpg", "seconds": 5, "role": "invite", "motion": "zoom-out" }
+  ]
+}

@@ -1,0 +1,4 @@
+out/
+# Ваши фото/видео/музыка (права!) в git не кладём
+public/reel/*
+!public/reel/.gitkeep
